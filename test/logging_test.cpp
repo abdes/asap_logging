@@ -3,8 +3,14 @@
 //    (See accompanying file LICENSE or copy at
 //   https://opensource.org/licenses/BSD-3-Clause)
 
-#if defined(__clang__)
-#pragma clang diagnostic push
+#include <hedley/hedley.h>
+
+// spdlog causes a bunch of compiler warnings we can't do anything about except
+// temporarily disabling them
+HEDLEY_DIAGNOSTIC_PUSH
+#if defined(HEDLEY_GNUC_VERSION)
+HEDLEY_PRAGMA(GCC diagnostic ignored "-Wstrict-overflow")
+#elif defined(__clang__)
 // Catch2 uses a lot of macro names that will make clang go crazy
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 // Big mess created because of the way spdlog is organizing its source code
@@ -14,9 +20,11 @@
 // with clang (rightfully) complaining that the template definitions are not
 // available when the template needs to be instantiated here.
 #pragma clang diagnostic ignored "-Wundefined-func-template"
-#endif  // __clang__
+#endif
 
 #include <logging/logging.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <catch2/catch.hpp>
 #include <iostream>
@@ -209,6 +217,4 @@ TEST_CASE("TestLogPushSink", "[common][logging]") {
 }  // namespace logging
 }  // namespace asap
 
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif  // __clang__
+HEDLEY_DIAGNOSTIC_POP
