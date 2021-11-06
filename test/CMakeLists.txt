@@ -76,6 +76,12 @@ asap_test_executable(
   ${compile_definitions}
   COMPILE_OPTIONS
   ${compile_options})
+
+set_target_properties(${target} PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
   
 target_compile_options(
   ${target}
