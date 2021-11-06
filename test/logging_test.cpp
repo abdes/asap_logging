@@ -16,9 +16,11 @@
 // with clang (rightfully) complaining that the template definitions are not
 // available when the template needs to be instantiated here.
 #pragma clang diagnostic ignored "-Wundefined-func-template"
-#endif  // __clang__
+#endif
 
 #include <logging/logging.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <catch2/catch.hpp>
 
