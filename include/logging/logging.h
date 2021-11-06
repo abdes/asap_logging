@@ -14,11 +14,10 @@
 #include <thread>         // for std::mutex
 #include <unordered_map>  // for the collection of loggers
 
-
 // spdlog causes a bunch of compiler warnings we can't do anything about except
 // temporarily disabling them
 HEDLEY_DIAGNOSTIC_PUSH
-#if defined(HEDLEY_GCC_VERSION)
+#if defined(HEDLEY_GNUC_VERSION)
 HEDLEY_PRAGMA(GCC diagnostic ignored "-Wswitch-default")
 HEDLEY_PRAGMA(GCC diagnostic ignored "-Wstrict-overflow")
 #elif defined(__clang__)
