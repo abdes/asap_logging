@@ -51,7 +51,7 @@ set(include_dirs)
 # ------------------------------------------------------------------------------
 
 set(compile_definitions)
-set(compile_options)
+set(compile_options "-fno-strict-overflow")
 
 # ------------------------------------------------------------------------------
 # Libraries
@@ -76,6 +76,14 @@ asap_test_executable(
   ${compile_definitions}
   COMPILE_OPTIONS
   ${compile_options})
+  
+target_compile_options(
+  ${target}
+  PRIVATE 
+    $<$<CXX_COMPILER_ID:GNU>:
+      -fno-strict-overflow
+    >
+  )
 
 # ------------------------------------------------------------------------------
 # Add support for (optional) code quality tools
