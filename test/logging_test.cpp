@@ -3,6 +3,8 @@
 //    (See accompanying file LICENSE or copy at
 //   https://opensource.org/licenses/BSD-3-Clause)
 
+#include <hedley/hedley.h>
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 // Catch2 uses a lot of macro names that will make clang go crazy
@@ -19,6 +21,11 @@
 #include <logging/logging.h>
 
 #include <catch2/catch.hpp>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif  // __clang__
+
 #include <iostream>
 #include <mutex>
 #include <sstream>
@@ -55,9 +62,9 @@ class Foo : Loggable<Foo> {
  public:
   Foo() { ASLOG(trace, "Foo constructor"); }
 
-  static const char *LOGGER_NAME;
+  static const char *const LOGGER_NAME;
 };
-const char *Foo::LOGGER_NAME = "foo";
+const char *const Foo::LOGGER_NAME = "foo";
 
 TEST_CASE("TestLoggable", "[common][logging]") {
   auto *test_sink = new TestSink_mt();
@@ -80,12 +87,15 @@ TEST_CASE("TestMultipleThreads", "[common][logging]") {
   Registry::PushSink(test_sink_ptr);
 
   std::thread th1([]() {
-    for (auto ii = 0; ii < 5; ++ii) ASLOG_MISC(debug, "THREAD_1: {}", ii);
+    for (auto ii = 0; ii < 5; ++ii) {
+      ASLOG_MISC(debug, "THREAD_1: {}", ii);
+    }
   });
   std::thread th2([]() {
     auto &test_logger = Registry::GetLogger("testing");
-    for (auto ii = 0; ii < 5; ++ii)
+    for (auto ii = 0; ii < 5; ++ii) {
       ASLOG_TO_LOGGER(test_logger, trace, "THREAD_2: {}", ii);
+    }
   });
   th1.join();
   th2.join();
@@ -151,7 +161,7 @@ TEST_CASE("TestLogWithPrefix", "[common][logging]") {
 namespace {
 class MockSink : public spdlog::sinks::sink {
  public:
-  void log(const spdlog::details::log_msg &) override { ++called_; }
+  void log(const spdlog::details::log_msg & /*msg*/) override { ++called_; }
   void flush() override {}
   void set_pattern(const std::string & /*pattern*/) override {}
   void set_formatter(
@@ -208,7 +218,3 @@ TEST_CASE("TestLogPushSink", "[common][logging]") {
 
 }  // namespace logging
 }  // namespace asap
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif  // __clang__
