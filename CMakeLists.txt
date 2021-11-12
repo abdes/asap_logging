@@ -131,11 +131,4 @@ asap_with_doxygen(
   "\"Provides logging functionality based on spdlog.\""
   "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_sphinx_target(${target})
-
-if(SPHINX_FOUND)
-  install(
-    DIRECTORY ${SPHINX_BUILD_DIR}/${target}
-    DESTINATION ${INSTALL_DOC}
-    COMPONENT docs)
-endif()
+asap_with_sphinx(${target})
