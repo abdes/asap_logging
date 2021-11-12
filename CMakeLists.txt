@@ -125,13 +125,11 @@ tidy_target(${target})
 # API Documentation
 # ------------------------------------------------------------------------------
 
-configure_doxyfile(
+asap_with_doxygen(
   ${target}
   "\"Logging Module\""
   "\"Provides logging functionality based on spdlog.\""
   "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-add_doxygen_target(${target})
 
 add_sphinx_target(${target})
 
