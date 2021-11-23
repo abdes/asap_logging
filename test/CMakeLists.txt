@@ -51,7 +51,7 @@ set(include_dirs)
 # ------------------------------------------------------------------------------
 
 set(compile_definitions)
-set(compile_options "-fno-strict-overflow")
+set(compile_options)
 
 # ------------------------------------------------------------------------------
 # Libraries
