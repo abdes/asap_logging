@@ -8,7 +8,7 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 // Catch2 uses a lot of macro names that will make clang go crazy
-#if !defined(__APPLE__)
+#if (__clang_major__ >= 13) && !defined(__APPLE__)
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif
 // Big mess created because of the way spdlog is organizing its source code
@@ -28,15 +28,14 @@
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
-#endif  // __clang__
+#endif // __clang__
 
 #include <iostream>
 #include <mutex>
 #include <sstream>
 
-template <typename Mutex>
-class TestSink : public spdlog::sinks::base_sink<Mutex> {
- public:
+template <typename Mutex> class TestSink : public spdlog::sinks::base_sink<Mutex> {
+public:
   void Reset() {
     out_.clear();
     called_ = 0;
@@ -45,11 +44,10 @@ class TestSink : public spdlog::sinks::base_sink<Mutex> {
   std::ostringstream out_;
   int called_{0};
 
- protected:
+protected:
   void sink_it_(const spdlog::details::log_msg &msg) override {
     ++called_;
-    out_.write(msg.payload.data(),
-               static_cast<std::streamsize>(msg.payload.size()));
+    out_.write(msg.payload.data(), static_cast<std::streamsize>(msg.payload.size()));
     out_.write("\n", 1);
   }
 
@@ -63,7 +61,7 @@ namespace asap {
 namespace logging {
 
 class Foo : Loggable<Foo> {
- public:
+public:
   Foo() { ASLOG(trace, "Foo constructor"); }
 
   static const char *const LOGGER_NAME;
@@ -111,13 +109,13 @@ TEST_CASE("TestMultipleThreads", "[common][logging]") {
   auto expected_seq_th2 = 0;
   while (std::getline(msg_reader, line)) {
     if (line.find("THREAD_1") != std::string::npos) {
-      REQUIRE(line.find(std::string("THREAD_1: ") +
-                        std::to_string(expected_seq_th1)) != std::string::npos);
+      REQUIRE(line.find(std::string("THREAD_1: ") + std::to_string(expected_seq_th1)) !=
+              std::string::npos);
       ++expected_seq_th1;
     }
     if (line.find("THREAD_2") != std::string::npos) {
-      REQUIRE(line.find(std::string("THREAD_2: ") +
-                        std::to_string(expected_seq_th2)) != std::string::npos);
+      REQUIRE(line.find(std::string("THREAD_2: ") + std::to_string(expected_seq_th2)) !=
+              std::string::npos);
       ++expected_seq_th2;
     }
   }
@@ -164,18 +162,17 @@ TEST_CASE("TestLogWithPrefix", "[common][logging]") {
 
 namespace {
 class MockSink : public spdlog::sinks::sink {
- public:
+public:
   void log(const spdlog::details::log_msg & /*msg*/) override { ++called_; }
   void flush() override {}
   void set_pattern(const std::string & /*pattern*/) override {}
-  void set_formatter(
-      std::unique_ptr<spdlog::formatter> /*sink_formatter*/) override {}
+  void set_formatter(std::unique_ptr<spdlog::formatter> /*sink_formatter*/) override {}
 
   void Reset() { called_ = 0; }
 
   int called_{0};
 };
-}  // namespace
+} // namespace
 
 TEST_CASE("TestLogPushSink", "[common][logging]") {
   auto *first_mock = new MockSink();
@@ -220,5 +217,5 @@ TEST_CASE("TestLogPushSink", "[common][logging]") {
   Registry::PopSink();
 }
 
-}  // namespace logging
-}  // namespace asap
+} // namespace logging
+} // namespace asap
